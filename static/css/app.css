@@ -1,0 +1,17 @@
+body {
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+.setup-card {
+  max-width: 980px;
+}
+
+.login-card {
+  max-width: 420px;
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
+}
+

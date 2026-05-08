@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h1 class="h5 mb-3">System Access Settings</h1>
+    {% if message %}<div class="alert alert-success">{{ message }}</div>{% endif %}
+    <form method="post" class="row g-3">
+      <div class="col-md-6"><label class="form-label">Telegram Bot Token</label><input class="form-control" name="telegram_bot_token" value="{{ settings.get('telegram_bot_token','') }}"></div>
+      <div class="col-md-6"><label class="form-label">AD Server</label><input class="form-control" name="ad_server" value="{{ settings.get('ad_server','') }}"></div>
+      <div class="col-md-6"><label class="form-label">AD Domain</label><input class="form-control" name="ad_domain" value="{{ settings.get('ad_domain','') }}"></div>
+      <div class="col-md-4"><label class="form-label">AI API URL</label><input class="form-control" name="ai_api_url" value="{{ settings.get('ai_api_url','') }}"></div>
+      <div class="col-md-4"><label class="form-label">AI API Key</label><input class="form-control" name="ai_api_key" value="{{ settings.get('ai_api_key','') }}"></div>
+      <div class="col-md-4"><label class="form-label">AI Model</label><input class="form-control" name="ai_model" value="{{ settings.get('ai_model','') }}"></div>
+      <div class="col-md-6"><label class="form-label">Dev Admin User</label><input class="form-control" name="dev_admin_user" value="{{ settings.get('dev_admin_user','admin') }}"></div>
+      <div class="col-md-6"><label class="form-label">Dev Admin Password</label><input type="password" class="form-control" name="dev_admin_password" value="{{ settings.get('dev_admin_password','admin123') }}"></div>
+      <div class="col-12 form-check">
+        <input type="checkbox" class="form-check-input" name="dev_mode" {% if settings.get('dev_mode','True')|lower == 'true' %}checked{% endif %}>
+        <label class="form-check-label">Enable local full admin</label>
+      </div>
+      <div class="col-12"><button class="btn btn-primary">Save Settings</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

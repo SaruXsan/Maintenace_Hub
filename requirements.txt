@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+jinja2
+sqlalchemy
+pyodbc
+python-multipart
+itsdangerous
+ldap3
+httpx
