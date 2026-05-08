@@ -14,29 +14,16 @@ def save_connection_settings(cfg: BootstrapConfig) -> None:
     save_bootstrap(cfg)
 
 
-def initialize_database(cfg: BootstrapConfig) -> None:
+def test_sql_connection(cfg: BootstrapConfig) -> None:
     from sqlalchemy import create_engine
 
-    master_url = (
-        "mssql+pyodbc://"
-        f"{cfg.db_user}:{cfg.db_password}@{cfg.db_host}/master"
-        f"?driver={cfg.db_driver.replace(' ', '+')}&TrustServerCertificate=yes"
-    )
-    master_engine = create_engine(master_url, pool_pre_ping=True)
-    with Session(master_engine) as db:
-        db.execute(
-            text(
-                """
-                IF DB_ID(:db_name) IS NULL
-                BEGIN
-                    DECLARE @sql NVARCHAR(MAX) = N'CREATE DATABASE [' + :db_name + N']';
-                    EXEC (@sql);
-                END
-                """
-            ),
-            {"db_name": cfg.db_name},
-        )
-        db.commit()
+    engine = create_engine(build_sqlserver_url(cfg), pool_pre_ping=True)
+    with Session(engine) as db:
+        db.execute(text("SELECT 1"))
+
+
+def initialize_portal_objects(cfg: BootstrapConfig) -> None:
+    from sqlalchemy import create_engine
 
     engine = create_engine(build_sqlserver_url(cfg), pool_pre_ping=True)
     Base.metadata.create_all(bind=engine)
@@ -73,7 +60,8 @@ def initialize_database(cfg: BootstrapConfig) -> None:
         db.execute(
             text(
                 """
-                IF OBJECT_ID('dbo.vw_distinct_values', 'V') IS NULL
+                IF OBJECT_ID('dbo.eet_distinct_values', 'U') IS NOT NULL
+                   AND OBJECT_ID('dbo.vw_distinct_values', 'V') IS NULL
                 EXEC('
                     CREATE VIEW dbo.vw_distinct_values AS
                     SELECT [value], [type], trxstatus
@@ -85,7 +73,8 @@ def initialize_database(cfg: BootstrapConfig) -> None:
         db.execute(
             text(
                 """
-                IF OBJECT_ID('dbo.vw_fleet_history_files', 'V') IS NULL
+                IF OBJECT_ID('dbo.fleet_history_files', 'U') IS NOT NULL
+                   AND OBJECT_ID('dbo.vw_fleet_history_files', 'V') IS NULL
                 EXEC('
                     CREATE VIEW dbo.vw_fleet_history_files AS
                     SELECT *
@@ -97,7 +86,8 @@ def initialize_database(cfg: BootstrapConfig) -> None:
         db.execute(
             text(
                 """
-                IF OBJECT_ID('dbo.vw_jobs', 'V') IS NULL
+                IF OBJECT_ID('dbo.daoud_job_order', 'U') IS NOT NULL
+                   AND OBJECT_ID('dbo.vw_jobs', 'V') IS NULL
                 EXEC('
                     CREATE VIEW dbo.vw_jobs AS
                     SELECT *
@@ -107,4 +97,31 @@ def initialize_database(cfg: BootstrapConfig) -> None:
             )
         )
         db.commit()
+
+
+def initialize_database(cfg: BootstrapConfig) -> None:
+    from sqlalchemy import create_engine
+
+    master_url = (
+        "mssql+pyodbc://"
+        f"{cfg.db_user}:{cfg.db_password}@{cfg.db_host}/master"
+        f"?driver={cfg.db_driver.replace(' ', '+')}&TrustServerCertificate=yes"
+    )
+    master_engine = create_engine(master_url, pool_pre_ping=True)
+    with Session(master_engine) as db:
+        db.execute(
+            text(
+                """
+                IF DB_ID(:db_name) IS NULL
+                BEGIN
+                    DECLARE @sql NVARCHAR(MAX) = N'CREATE DATABASE [' + :db_name + N']';
+                    EXEC (@sql);
+                END
+                """
+            ),
+            {"db_name": cfg.db_name},
+        )
+        db.commit()
+
+    initialize_portal_objects(cfg)
 

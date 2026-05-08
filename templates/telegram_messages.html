@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h5 mb-0">Telegram Messages</h1>
+  <a class="btn btn-outline-secondary btn-sm" href="/admin">Back to Dashboard</a>
+</div>
+
+{% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <form method="get" class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label" for="search">Search</label>
+        <input id="search" name="search" class="form-control" value="{{ filters.search }}" placeholder="Message text or name">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label" for="user_id">Telegram User ID</label>
+        <input id="user_id" name="user_id" class="form-control" value="{{ filters.user_id }}">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="source">Source</label>
+        <select id="source" name="source" class="form-select">
+          <option value="">All</option>
+          <option value="webhook" {% if filters.source == "webhook" %}selected{% endif %}>Webhook</option>
+          <option value="polling" {% if filters.source == "polling" %}selected{% endif %}>Polling Sync</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="limit">Limit</label>
+        <select id="limit" name="limit" class="form-select">
+          <option value="50" {% if filters.limit == 50 %}selected{% endif %}>50</option>
+          <option value="100" {% if filters.limit == 100 %}selected{% endif %}>100</option>
+          <option value="200" {% if filters.limit == 200 %}selected{% endif %}>200</option>
+        </select>
+      </div>
+      <div class="col-md-1 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Go</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>User</th>
+            <th>Name</th>
+            <th>Source</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.created_at }}</td>
+            <td>{{ r.telegram_user_id }}</td>
+            <td>{{ r.full_name or r.username or "-" }}</td>
+            <td>{{ r.source }}</td>
+            <td>{{ r.message_text or "-" }}</td>
+          </tr>
+          {% endfor %}
+          {% if not rows %}
+          <tr><td colspan="5" class="text-muted text-center">No messages found.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

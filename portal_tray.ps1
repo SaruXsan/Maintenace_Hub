@@ -9,21 +9,56 @@ if (Test-Path ".venv\Scripts\python.exe") {
     $pythonExe = Join-Path $projectRoot ".venv\Scripts\python.exe"
 }
 
-$uvicornArgs = "-m uvicorn app.main:app --host 127.0.0.1 --port 8000"
+function Get-FreePort {
+    param(
+        [int]$Start = 8100,
+        [int]$End = 8199
+    )
+
+    $listeners = [System.Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().GetActiveTcpListeners()
+    $used = @{}
+    foreach ($listener in $listeners) {
+        $used[$listener.Port] = $true
+    }
+
+    for ($p = $Start; $p -le $End; $p++) {
+        if (-not $used.ContainsKey($p)) {
+            return $p
+        }
+    }
+    return 8765
+}
+
+$port = Get-FreePort
+$webUrl = "http://127.0.0.1:$port"
+$lanIp = (Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue |
+    Where-Object { $_.IPAddress -notlike '127.*' -and $_.PrefixOrigin -ne 'WellKnown' } |
+    Select-Object -First 1 -ExpandProperty IPAddress)
+if (-not $lanIp) {
+    $lanIp = "YOUR_PC_IP"
+}
+$networkUrl = "http://$lanIp:$port"
+
+$uvicornArgs = "-m uvicorn app.main:app --host 0.0.0.0 --port $port"
 $server = Start-Process -FilePath $pythonExe -ArgumentList $uvicornArgs -WorkingDirectory $projectRoot -WindowStyle Hidden -PassThru
 
 $notifyIcon = New-Object System.Windows.Forms.NotifyIcon
 $notifyIcon.Icon = [System.Drawing.SystemIcons]::Application
-$notifyIcon.Text = "Maintenance Hub Portal"
+$notifyIcon.Text = "Maintenance Hub Portal ($port)"
 $notifyIcon.Visible = $true
 
 $contextMenu = New-Object System.Windows.Forms.ContextMenuStrip
 $openItem = $contextMenu.Items.Add("Open Web")
+$openNetworkItem = $contextMenu.Items.Add("Open Network URL")
 $exitItem = $contextMenu.Items.Add("Exit")
 $notifyIcon.ContextMenuStrip = $contextMenu
 
 $openHandler = {
-    Start-Process "http://127.0.0.1:8000"
+    Start-Process $webUrl
+}
+
+$openNetworkHandler = {
+    Start-Process $networkUrl
 }
 
 $exitHandler = {
@@ -39,10 +74,11 @@ $exitHandler = {
 }
 
 $openItem.add_Click($openHandler)
+$openNetworkItem.add_Click($openNetworkHandler)
 $exitItem.add_Click($exitHandler)
 $notifyIcon.add_DoubleClick($openHandler)
 
 Start-Sleep -Milliseconds 1200
-Start-Process "http://127.0.0.1:8000"
+Start-Process $webUrl
 
 [System.Windows.Forms.Application]::Run()

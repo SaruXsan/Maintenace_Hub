@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h5 mb-0">Distinct Values (Read-only)</h1>
+  <a class="btn btn-outline-secondary btn-sm" href="/admin">Back to Dashboard</a>
+</div>
+
+{% if error %}<div class="alert alert-warning">{{ error }}</div>{% endif %}
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <form method="get" class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label" for="value_type">Type</label>
+        <select id="value_type" name="value_type" class="form-select">
+          <option value="">All Types</option>
+          {% for t in types %}
+          <option value="{{ t }}" {% if filters.value_type == t %}selected{% endif %}>{{ t }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label" for="value_search">Value Search</label>
+        <input id="value_search" name="value_search" class="form-control" value="{{ filters.value_search }}" placeholder="Search value">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="trxstatus">Trx Status</label>
+        <input id="trxstatus" name="trxstatus" class="form-control" value="{{ filters.trxstatus }}" placeholder="Status">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="limit">Limit</label>
+        <select id="limit" name="limit" class="form-select">
+          <option value="50" {% if filters.limit == 50 %}selected{% endif %}>50</option>
+          <option value="100" {% if filters.limit == 100 %}selected{% endif %}>100</option>
+          <option value="200" {% if filters.limit == 200 %}selected{% endif %}>200</option>
+          <option value="500" {% if filters.limit == 500 %}selected{% endif %}>500</option>
+        </select>
+      </div>
+      <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Apply Filters</button>
+        <a href="/admin/data/distinct-values" class="btn btn-outline-secondary">Reset</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Value</th>
+            <th>Trx Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.type }}</td>
+            <td>{{ r.value }}</td>
+            <td>{{ r.trxstatus or "-" }}</td>
+          </tr>
+          {% endfor %}
+          {% if not rows %}
+          <tr><td colspan="3" class="text-center text-muted">No records found.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

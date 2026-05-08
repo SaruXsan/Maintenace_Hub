@@ -16,7 +16,7 @@ templates = Jinja2Templates(directory="templates")
 
 @router.get("/login", response_class=HTMLResponse)
 def login_page(request: Request):
-    return templates.TemplateResponse(request, "login.html", {"error": ""})
+    return templates.TemplateResponse("login.html", {"request": request, "error": ""})
 
 
 @router.post("/login", response_class=HTMLResponse)
@@ -33,9 +33,8 @@ def login_submit(
         raise HTTPException(status_code=401, detail="Invalid")
     except HTTPException:
         return templates.TemplateResponse(
-            request,
             "login.html",
-            {"error": "Invalid login. Check credentials or AD connectivity."},
+            {"request": request, "error": "Invalid login. Check credentials or AD connectivity."},
             status_code=401,
         )
 

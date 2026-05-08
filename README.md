@@ -21,11 +21,23 @@ Modern FastAPI portal for maintenance operations with:
 
 - `run_portal.bat`:
   - Installs/updates requirements then runs the app in console mode.
+  - Auto-selects a free port in `8100-8199` (fallback `8765`).
+  - Binds to `0.0.0.0` so LAN devices can access it.
+  - Prints both local and network URL.
 - `run_portal_tray.vbs`:
   - Starts the app in the background with a system tray icon.
+  - Auto-selects a free port in `8100-8199` (fallback `8765`).
+  - Binds to `0.0.0.0` so LAN devices can access it.
   - Tray menu provides:
     - `Open Web`
+    - `Open Network URL`
     - `Exit`
+
+### Access from other devices on your network
+
+- Start using `run_portal.bat` or `run_portal_tray.vbs`.
+- Use `http://<your-pc-ip>:<selected-port>` from another machine.
+- Batch launcher attempts to add a Windows Firewall inbound allow rule for the selected port.
 
 ## First Time Setup
 

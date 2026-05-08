@@ -15,3 +15,81 @@ body {
   vertical-align: middle;
 }
 
+.telegram-activity-panel {
+  background: #021324;
+  color: #d2f2ff;
+  border: 1px solid #0a3a53;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.telegram-activity-subtitle {
+  color: #9bc7da;
+  margin-bottom: 10px;
+  font-size: 0.92rem;
+}
+
+.telegram-chip {
+  border: 1px solid #0f5f83;
+  border-radius: 8px;
+  padding: 2px 10px;
+  font-size: 0.82rem;
+  color: #b7e9ff;
+}
+
+.telegram-refresh-link {
+  color: #9fd9ff;
+  align-self: center;
+  font-size: 0.86rem;
+}
+
+.telegram-console {
+  border: 1px solid #0f5f83;
+  border-radius: 10px;
+  min-height: 220px;
+  max-height: 420px;
+  overflow: auto;
+  padding: 12px;
+  background: #031b30;
+}
+
+.telegram-event {
+  margin-bottom: 12px;
+}
+
+.telegram-event-meta {
+  color: #8ec6db;
+  font-size: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.telegram-event-text {
+  margin-top: 4px;
+  color: #dff7ff;
+}
+
+.telegram-badge {
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.telegram-badge-ai {
+  background: #394a58;
+  color: #e8f3ff;
+}
+
+.telegram-badge-user {
+  background: #2a5872;
+  color: #eff9ff;
+}
+
+.telegram-badge-net {
+  background: #613824;
+  color: #fff3ea;
+}
+

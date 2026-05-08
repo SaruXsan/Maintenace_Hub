@@ -13,7 +13,9 @@
       <div class="card-body p-4">
         <h1 class="h4 mb-3">System Setup (Fail-safe)</h1>
         <p class="text-muted">Configure SQL and admin access. This page works even before database setup.</p>
-        {% if message %}<div class="alert alert-danger">{{ message }}</div>{% endif %}
+        {% if message %}
+          <div class="alert alert-{{ message_type or 'danger' }}">{{ message }}</div>
+        {% endif %}
         <form method="post" class="row g-3">
           <div class="col-md-6"><label class="form-label">DB Host</label><input name="db_host" class="form-control" value="{{ cfg.db_host }}" required></div>
           <div class="col-md-6"><label class="form-label">DB Name</label><input name="db_name" class="form-control" value="{{ cfg.db_name }}" required></div>
@@ -32,7 +34,12 @@
             <input type="checkbox" class="form-check-input" name="dev_mode" {% if cfg.dev_mode %}checked{% endif %}>
             <label class="form-check-label">Enable local full admin for development</label>
           </div>
-          <div class="col-12"><button class="btn btn-primary">Save + Create DB Objects</button></div>
+          <div class="col-12 d-flex flex-wrap gap-2">
+            <button class="btn btn-outline-primary" type="submit" name="action" value="test_sql">Test SQL Connection</button>
+            <button class="btn btn-secondary" type="submit" name="action" value="save">Save Settings</button>
+            <button class="btn btn-primary" type="submit" name="action" value="continue">Continue</button>
+            <button class="btn btn-outline-warning" type="submit" name="action" value="create_db">Create DB + Objects (Optional)</button>
+          </div>
         </form>
       </div>
     </div>

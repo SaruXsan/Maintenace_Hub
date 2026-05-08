@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h5 mb-0">Job Orders (Read-only)</h1>
+  <a class="btn btn-outline-secondary btn-sm" href="/admin">Back to Dashboard</a>
+</div>
+
+{% if error %}<div class="alert alert-warning">{{ error }}</div>{% endif %}
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <form method="get" class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label" for="search">Search</label>
+        <input id="search" name="search" class="form-control" value="{{ filters.search }}" placeholder="Job ID, customer, tech, equipment">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label" for="customer">Customer</label>
+        <input id="customer" name="customer" class="form-control" value="{{ filters.customer }}" placeholder="Customer name">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="date_from">Date From</label>
+        <input id="date_from" type="date" name="date_from" class="form-control" value="{{ filters.date_from }}">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="date_to">Date To</label>
+        <input id="date_to" type="date" name="date_to" class="form-control" value="{{ filters.date_to }}">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="limit">Limit</label>
+        <select id="limit" name="limit" class="form-select">
+          <option value="25" {% if filters.limit == 25 %}selected{% endif %}>25</option>
+          <option value="50" {% if filters.limit == 50 %}selected{% endif %}>50</option>
+          <option value="100" {% if filters.limit == 100 %}selected{% endif %}>100</option>
+          <option value="200" {% if filters.limit == 200 %}selected{% endif %}>200</option>
+        </select>
+      </div>
+      <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Apply Filters</button>
+        <a href="/admin/data/jobs" class="btn btn-outline-secondary">Reset</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>Job ID</th>
+            <th>Job Date</th>
+            <th>Customer</th>
+            <th>Technician</th>
+            <th>Equipment</th>
+            <th>Attachment</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.JobID }}</td>
+            <td>{{ r.JobDate }}</td>
+            <td>{{ r.JobCustName }}</td>
+            <td>{{ r.JobTech or "-" }}</td>
+            <td>{{ r.JobEquipment or "-" }}</td>
+            <td>{{ r.JobAttachName or "-" }}</td>
+          </tr>
+          {% endfor %}
+          {% if not rows %}
+          <tr><td colspan="6" class="text-center text-muted">No records found.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

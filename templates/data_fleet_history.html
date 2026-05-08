@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h5 mb-0">Fleet History Files (Read-only)</h1>
+  <a class="btn btn-outline-secondary btn-sm" href="/admin">Back to Dashboard</a>
+</div>
+
+{% if error %}<div class="alert alert-warning">{{ error }}</div>{% endif %}
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <form method="get" class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label" for="plate_number">Plate Number</label>
+        <input id="plate_number" name="plate_number" class="form-control" value="{{ filters.plate_number }}" placeholder="e.g. ABC123">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label" for="item_search">Item Description</label>
+        <input id="item_search" name="item_search" class="form-control" value="{{ filters.item_search }}" placeholder="Item keyword">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="invoice_number">Invoice</label>
+        <input id="invoice_number" name="invoice_number" class="form-control" value="{{ filters.invoice_number }}" placeholder="Invoice no.">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="trxstatus">Trx Status</label>
+        <input id="trxstatus" name="trxstatus" class="form-control" value="{{ filters.trxstatus }}" placeholder="Status">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="limit">Limit</label>
+        <select id="limit" name="limit" class="form-select">
+          <option value="25" {% if filters.limit == 25 %}selected{% endif %}>25</option>
+          <option value="50" {% if filters.limit == 50 %}selected{% endif %}>50</option>
+          <option value="100" {% if filters.limit == 100 %}selected{% endif %}>100</option>
+          <option value="200" {% if filters.limit == 200 %}selected{% endif %}>200</option>
+        </select>
+      </div>
+      <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Apply Filters</button>
+        <a href="/admin/data/fleet-history" class="btn btn-outline-secondary">Reset</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>Purchase Date</th>
+            <th>Invoice Number</th>
+            <th>Plate</th>
+            <th>Item Description</th>
+            <th>Qty</th>
+            <th>Amount USD</th>
+            <th>Amount LBP</th>
+            <th>Trx Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r['Purchase Date'] }}</td>
+            <td>{{ r['Invoice Number'] or "-" }}</td>
+            <td>{{ r['Plate Number'] or "-" }}</td>
+            <td>{{ r['Item Description'] or "-" }}</td>
+            <td>{{ r.Qty }}</td>
+            <td>{{ r['Amount USD'] }}</td>
+            <td>{{ r['Amount LBP'] }}</td>
+            <td>{{ r.TrxStatus or "-" }}</td>
+          </tr>
+          {% endfor %}
+          {% if not rows %}
+          <tr><td colspan="8" class="text-center text-muted">No records found.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -5,19 +5,33 @@
     <h1 class="h5 mb-3">System Access Settings</h1>
     {% if message %}<div class="alert alert-success">{{ message }}</div>{% endif %}
     <form method="post" class="row g-3">
-      <div class="col-md-6"><label class="form-label">Telegram Bot Token</label><input class="form-control" name="telegram_bot_token" value="{{ settings.get('telegram_bot_token','') }}"></div>
-      <div class="col-md-6"><label class="form-label">AD Server</label><input class="form-control" name="ad_server" value="{{ settings.get('ad_server','') }}"></div>
-      <div class="col-md-6"><label class="form-label">AD Domain</label><input class="form-control" name="ad_domain" value="{{ settings.get('ad_domain','') }}"></div>
-      <div class="col-md-4"><label class="form-label">AI API URL</label><input class="form-control" name="ai_api_url" value="{{ settings.get('ai_api_url','') }}"></div>
-      <div class="col-md-4"><label class="form-label">AI API Key</label><input class="form-control" name="ai_api_key" value="{{ settings.get('ai_api_key','') }}"></div>
-      <div class="col-md-4"><label class="form-label">AI Model</label><input class="form-control" name="ai_model" value="{{ settings.get('ai_model','') }}"></div>
-      <div class="col-md-6"><label class="form-label">Dev Admin User</label><input class="form-control" name="dev_admin_user" value="{{ settings.get('dev_admin_user','admin') }}"></div>
-      <div class="col-md-6"><label class="form-label">Dev Admin Password</label><input type="password" class="form-control" name="dev_admin_password" value="{{ settings.get('dev_admin_password','admin123') }}"></div>
-      <div class="col-12 form-check">
-        <input type="checkbox" class="form-check-input" name="dev_mode" {% if settings.get('dev_mode','True')|lower == 'true' %}checked{% endif %}>
-        <label class="form-check-label">Enable local full admin</label>
+      <div class="col-md-6"><label class="form-label" for="telegram_bot_token">Telegram Bot Token</label><input id="telegram_bot_token" class="form-control" name="telegram_bot_token" value="{{ settings.get('telegram_bot_token','') }}"></div>
+      <div class="col-md-6"><label class="form-label" for="ad_server">AD Server</label><input id="ad_server" class="form-control" name="ad_server" value="{{ settings.get('ad_server','') }}"></div>
+      <div class="col-md-6"><label class="form-label" for="ad_domain">AD Domain</label><input id="ad_domain" class="form-control" name="ad_domain" value="{{ settings.get('ad_domain','') }}"></div>
+      <div class="col-md-4"><label class="form-label" for="ai_api_url">AI API URL</label><input id="ai_api_url" class="form-control" name="ai_api_url" value="{{ settings.get('ai_api_url','') }}"></div>
+      <div class="col-md-4"><label class="form-label" for="ai_api_key">AI API Key</label><input id="ai_api_key" class="form-control" name="ai_api_key" value="{{ settings.get('ai_api_key','') }}"></div>
+      <div class="col-md-4">
+        <label class="form-label" for="ai_model">AI Model</label>
+        <select id="ai_model" class="form-select" name="ai_model">
+          {% set current_model = settings.get('ai_model','') %}
+          {% if current_model and current_model not in ['gpt-4o-mini','gpt-4.1-mini','gpt-4.1','gpt-4o','o4-mini'] %}
+          <option value="{{ current_model }}" selected>{{ current_model }} (current)</option>
+          {% endif %}
+          <option value="">-- Select Model --</option>
+          <option value="gpt-4o-mini" {% if current_model == 'gpt-4o-mini' %}selected{% endif %}>gpt-4o-mini</option>
+          <option value="gpt-4.1-mini" {% if current_model == 'gpt-4.1-mini' %}selected{% endif %}>gpt-4.1-mini</option>
+          <option value="gpt-4.1" {% if current_model == 'gpt-4.1' %}selected{% endif %}>gpt-4.1</option>
+          <option value="gpt-4o" {% if current_model == 'gpt-4o' %}selected{% endif %}>gpt-4o</option>
+          <option value="o4-mini" {% if current_model == 'o4-mini' %}selected{% endif %}>o4-mini</option>
+        </select>
       </div>
-      <div class="col-12"><button class="btn btn-primary">Save Settings</button></div>
+      <div class="col-md-6"><label class="form-label" for="dev_admin_user">Dev Admin User</label><input id="dev_admin_user" class="form-control" name="dev_admin_user" value="{{ settings.get('dev_admin_user','admin') }}"></div>
+      <div class="col-md-6"><label class="form-label" for="dev_admin_password">Dev Admin Password</label><input id="dev_admin_password" type="password" class="form-control" name="dev_admin_password" value="{{ settings.get('dev_admin_password','admin123') }}"></div>
+      <div class="col-12 form-check">
+        <input id="dev_mode" type="checkbox" class="form-check-input" name="dev_mode" {% if settings.get('dev_mode','True')|lower == 'true' %}checked{% endif %}>
+        <label class="form-check-label" for="dev_mode">Enable local full admin</label>
+      </div>
+      <div class="col-12"><button type="submit" class="btn btn-primary">Save Settings</button></div>
     </form>
   </div>
 </div>

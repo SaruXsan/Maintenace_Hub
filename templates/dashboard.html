@@ -1,5 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="card shadow-sm mb-4">
+  <div class="card-body d-flex flex-wrap gap-2">
+    <a href="/admin/data/jobs" class="btn btn-outline-primary">Job Orders Data</a>
+    <a href="/admin/data/fleet-history" class="btn btn-outline-primary">Fleet History Data</a>
+    <a href="/admin/data/distinct-values" class="btn btn-outline-primary">Distinct Values Data</a>
+    <a href="/admin/telegram" class="btn btn-outline-success">Telegram Integration</a>
+    <a href="/admin/telegram/messages" class="btn btn-outline-success">Telegram Messages</a>
+  </div>
+</div>
+
 <div class="row g-4">
   <div class="col-lg-8">
     <div class="card shadow-sm">
@@ -17,17 +27,20 @@
                 <td>
                   <form method="post" action="/admin/approve/{{ p.id }}" class="d-inline">
                     <input type="hidden" name="approved" value="true">
-                    <button class="btn btn-sm btn-success">Approve</button>
+                    <button type="submit" class="btn btn-sm btn-success">Approve</button>
                   </form>
                   <form method="post" action="/admin/approve/{{ p.id }}" class="d-inline">
                     <input type="hidden" name="approved" value="false">
-                    <button class="btn btn-sm btn-outline-danger">Revoke</button>
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Revoke</button>
                   </form>
                 </td>
               </tr>
               {% endfor %}
             </tbody>
           </table>
+          {% if not pending %}
+          <div class="text-muted small">No pending users. Approved users are hidden from this queue.</div>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -36,14 +49,14 @@
     <div class="card shadow-sm">
       <div class="card-body">
         <h2 class="h5">Recent Jobs (Read-only)</h2>
-        <ul class="list-group list-group-flush">
+        <div class="list-group list-group-flush">
           {% for j in jobs %}
-          <li class="list-group-item px-0">
+          <div class="list-group-item px-0">
             <strong>#{{ j.JobID }}</strong> {{ j.JobCustName }}<br>
             <small class="text-muted">{{ j.JobDate }} - {{ j.JobTech or "-" }}</small>
-          </li>
+          </div>
           {% endfor %}
-        </ul>
+        </div>
       </div>
     </div>
   </div>

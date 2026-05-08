@@ -5,7 +5,12 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from app.config import BootstrapConfig, load_bootstrap
-from app.services.setup_service import initialize_database, save_connection_settings
+from app.services.setup_service import (
+    initialize_database,
+    initialize_portal_objects,
+    save_connection_settings,
+    test_sql_connection,
+)
 
 router = APIRouter(tags=["setup"])
 templates = Jinja2Templates(directory="templates")
@@ -14,9 +19,8 @@ templates = Jinja2Templates(directory="templates")
 @router.get("/setup", response_class=HTMLResponse)
 def setup_page(request: Request):
     return templates.TemplateResponse(
-        request,
         "setup.html",
-        {"cfg": load_bootstrap(), "message": ""},
+        {"request": request, "cfg": load_bootstrap(), "message": "", "message_type": "danger"},
     )
 
 
@@ -37,6 +41,7 @@ def save_setup(
     dev_mode: bool = Form(False),
     dev_admin_user: str = Form("admin"),
     dev_admin_password: str = Form("admin123"),
+    action: str = Form("save"),
 ):
     cfg = BootstrapConfig(
         db_host=db_host,
@@ -54,15 +59,59 @@ def save_setup(
         dev_admin_user=dev_admin_user,
         dev_admin_password=dev_admin_password,
     )
-    save_connection_settings(cfg)
-
     try:
-        initialize_database(cfg)
-        return RedirectResponse("/login", status_code=303)
+        if action == "test_sql":
+            test_sql_connection(cfg)
+            return templates.TemplateResponse(
+                "setup.html",
+                {
+                    "request": request,
+                    "cfg": cfg,
+                    "message": "SQL connection successful.",
+                    "message_type": "success",
+                },
+            )
+
+        if action == "save":
+            save_connection_settings(cfg)
+            return templates.TemplateResponse(
+                "setup.html",
+                {
+                    "request": request,
+                    "cfg": cfg,
+                    "message": "Settings saved locally.",
+                    "message_type": "success",
+                },
+            )
+
+        if action == "continue":
+            save_connection_settings(cfg)
+            test_sql_connection(cfg)
+            initialize_portal_objects(cfg)
+            return RedirectResponse("/login", status_code=303)
+
+        if action == "create_db":
+            save_connection_settings(cfg)
+            initialize_database(cfg)
+            return RedirectResponse("/login", status_code=303)
+
+        return templates.TemplateResponse(
+            "setup.html",
+            {
+                "request": request,
+                "cfg": cfg,
+                "message": "Unknown action requested.",
+                "message_type": "danger",
+            },
+        )
     except Exception as exc:
         return templates.TemplateResponse(
-            request,
             "setup.html",
-            {"cfg": cfg, "message": f"Setup failed: {exc}"},
+            {
+                "request": request,
+                "cfg": cfg,
+                "message": f"Setup failed: {exc}",
+                "message_type": "danger",
+            },
         )
 
