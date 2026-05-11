@@ -13,7 +13,7 @@ Modern FastAPI portal for maintenance operations with:
 1. Install dependencies:
    - `pip install -r requirements.txt`
 2. Start:
-   - `uvicorn app.main:app --reload`
+   - `uvicorn app.main:app`
 3. Open:
    - `http://127.0.0.1:8000`
 
@@ -24,6 +24,8 @@ Modern FastAPI portal for maintenance operations with:
   - Auto-selects a free port in `8100-8199` (fallback `8765`).
   - Binds to `0.0.0.0` so LAN devices can access it.
   - Prints both local and network URL.
+  - Runs single-process mode by default so closing the terminal stops it cleanly.
+  - Optional dev hot reload: set `PORTAL_DEV_RELOAD=1` before launching.
 - `run_portal_tray.vbs`:
   - Starts the app in the background with a system tray icon.
   - Auto-selects a free port in `8100-8199` (fallback `8765`).

@@ -9,6 +9,18 @@ if (Test-Path ".venv\Scripts\python.exe") {
     $pythonExe = Join-Path $projectRoot ".venv\Scripts\python.exe"
 }
 
+function Get-ExistingMaintenanceHubPort {
+    $procs = Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -match '^python(\.exe)?$' -and $_.CommandLine -match 'uvicorn app\.main:app' }
+    if (-not $procs) { return $null }
+    $ports = Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue |
+        Where-Object { $_.OwningProcess -in $procs.ProcessId } |
+        Select-Object -ExpandProperty LocalPort -Unique |
+        Sort-Object
+    if ($ports -and $ports.Count -gt 0) { return $ports[0] }
+    return $null
+}
+
 function Get-FreePort {
     param(
         [int]$Start = 8100,
@@ -27,6 +39,12 @@ function Get-FreePort {
         }
     }
     return 8765
+}
+
+$existingPort = Get-ExistingMaintenanceHubPort
+if ($existingPort) {
+    Start-Process "http://127.0.0.1:$existingPort"
+    exit 0
 }
 
 $port = Get-FreePort
